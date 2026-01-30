@@ -10,7 +10,7 @@ import { Loader } from './components/Loader';
 import { Todo } from './types/Todo';
 import { getTodos, getUser } from './api';
 import { User } from './types/User';
-import { ModalProvaid } from './components/ModalContext';
+import { ModalProvider } from './components/ModalContext';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -19,11 +19,15 @@ export const App: React.FC = () => {
   const [todoForSelectUser, setTodoForSelectUser] = useState<Todo | null>(null);
   const [optionFilter, setOptionFilter] = useState('all');
   const [searchFilter, setSearchFilter] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     setIsLoading(true);
     getTodos()
       .then(newData => setTodos(newData))
+      .catch(error =>
+        setErrorMessage(new Error(`todo data loading error: ${error}`).message),
+      )
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -61,7 +65,11 @@ export const App: React.FC = () => {
   }, [optionFilter, todos, searchFilter]);
 
   const handleOpenModal = (userId: number, todo: Todo) => {
-    getUser(userId).then(userData => setUser({ ...userData }));
+    getUser(userId)
+      .then(userData => setUser(userData))
+      .catch(error =>
+        setErrorMessage(new Error(`User data loading error: ${error}`).message),
+      );
     setTodoForSelectUser(todo);
   };
 
@@ -71,7 +79,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <ModalProvaid>
+    <ModalProvider>
       <div className="section">
         <div className="container">
           <div className="box">
@@ -88,19 +96,22 @@ export const App: React.FC = () => {
 
             <div className="block">
               {isLoading && <Loader />}
-              <TodoList todos={filteredTodos} openModal={handleOpenModal} />
+              {errorMessage || (
+                <TodoList todos={filteredTodos} openModal={handleOpenModal} />
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {todoForSelectUser && (
-        <TodoModal
-          user={user}
-          todo={todoForSelectUser}
-          closeModal={handleCloseModal}
-        />
-      )}
-    </ModalProvaid>
+      {errorMessage ||
+        (todoForSelectUser && (
+          <TodoModal
+            user={user}
+            todo={todoForSelectUser}
+            closeModal={handleCloseModal}
+          />
+        ))}
+    </ModalProvider>
   );
 };

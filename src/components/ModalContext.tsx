@@ -11,7 +11,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export const ModalProvaid: React.FC<Props> = ({ children }) => {
+export const ModalProvider: React.FC<Props> = ({ children }) => {
   const [resetRow, setResetRow] = useState<(() => void) | null>(null);
 
   return (
