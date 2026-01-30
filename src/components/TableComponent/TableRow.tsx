@@ -9,14 +9,33 @@ type Props = {
   // title: string;
   // completed: boolean;
   // userId: number;
-  openModal: (uId: number, todo: Todo) => void;
+  onOpenModal: (uId: number, todo: Todo) => void;
+  errorUser: string;
 };
 
-export const TableRow: React.FC<Props> = ({ todo, openModal }) => {
+export const TableRow: React.FC<Props> = ({ todo, onOpenModal, errorUser }) => {
   const [isClick, setIsClick] = useState(false);
   const { setResetRow } = useModalContext();
 
   const { id, title, completed, userId } = todo;
+
+  type ClassName = {
+    'fa-eye': boolean;
+    'fa-eye-slash': boolean;
+  };
+
+  const nameClass: ClassName = {
+    'fa-eye': !isClick,
+    'fa-eye-slash': isClick,
+  };
+
+  if (errorUser) {
+    nameClass['fa-eye'] = true;
+    nameClass['fa-eye-slash'] = false;
+  } else {
+    nameClass['fa-eye'] = !isClick;
+    nameClass['fa-eye-slash'] = isClick;
+  }
 
   return (
     <tr data-cy="todo" className="">
@@ -41,7 +60,7 @@ export const TableRow: React.FC<Props> = ({ todo, openModal }) => {
       <td className="has-text-right is-vcentered">
         <button
           onClick={() => {
-            openModal(userId, todo);
+            onOpenModal(userId, todo);
             setIsClick(true);
             setResetRow(() => () => setIsClick(false));
           }}
@@ -50,12 +69,7 @@ export const TableRow: React.FC<Props> = ({ todo, openModal }) => {
           type="button"
         >
           <span className="icon">
-            <i
-              className={classNames('far', {
-                'fa-eye': !isClick,
-                'fa-eye-slash': isClick,
-              })}
-            />
+            <i className={classNames('far', nameClass)} />
           </span>
         </button>
       </td>

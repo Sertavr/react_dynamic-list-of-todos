@@ -4,10 +4,15 @@ import { TableRow } from '../TableComponent/TableRow';
 
 type Props = {
   todos: Todo[];
-  openModal: (userId: number, todo: Todo) => void;
+  errorUser: string;
+  onOpenModal: (userId: number, todo: Todo) => void;
 };
 
-export const TodoList: React.FC<Props> = ({ todos, openModal }) => (
+export const TodoList: React.FC<Props> = ({
+  todos,
+  onOpenModal,
+  errorUser,
+}) => (
   <table className="table is-narrow is-fullwidth">
     <thead>
       <tr>
@@ -25,13 +30,14 @@ export const TodoList: React.FC<Props> = ({ todos, openModal }) => (
     <tbody>
       {todos.map(todo => (
         <TableRow
+          errorUser={errorUser}
           todo={todo}
           // id={todo.id}
           // title={todo.title}
           // completed={todo.completed}
           // userId={todo.userId}
           key={todo.id}
-          openModal={openModal}
+          onOpenModal={onOpenModal}
         />
       ))}
     </tbody>

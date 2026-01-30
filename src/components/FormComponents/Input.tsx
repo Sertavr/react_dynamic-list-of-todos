@@ -2,10 +2,10 @@ import React from 'react';
 
 type Props = {
   value: string;
-  handleChangeInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const Input: React.FC<Props> = ({ value, handleChangeInput }) => {
+export const Input: React.FC<Props> = ({ value, onChangeInput }) => {
   return (
     <input
       data-cy="searchInput"
@@ -13,7 +13,7 @@ export const Input: React.FC<Props> = ({ value, handleChangeInput }) => {
       className="input"
       placeholder="Search..."
       value={value}
-      onChange={handleChangeInput}
+      onChange={onChangeInput}
     />
   );
 };

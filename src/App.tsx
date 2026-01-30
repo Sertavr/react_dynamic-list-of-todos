@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [optionFilter, setOptionFilter] = useState('all');
   const [searchFilter, setSearchFilter] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [errorUserMessage, setErrorUserMessage] = useState('');
 
   useEffect(() => {
     setIsLoading(true);
@@ -31,15 +32,15 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const handleSelectOption = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const onSelectOption = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setOptionFilter(event.target.value);
   };
 
-  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchFilter(event.target.value);
   };
 
-  const handleClearSearch = () => setSearchFilter('');
+  const onClearSearch = () => setSearchFilter('');
 
   const filteredTodos = useMemo(() => {
     let result = [...todos];
@@ -64,16 +65,18 @@ export const App: React.FC = () => {
     return result;
   }, [optionFilter, todos, searchFilter]);
 
-  const handleOpenModal = (userId: number, todo: Todo) => {
+  const onOpenModal = (userId: number, todo: Todo) => {
     getUser(userId)
       .then(userData => setUser(userData))
       .catch(error =>
-        setErrorMessage(new Error(`User data loading error: ${error}`).message),
+        setErrorUserMessage(
+          new Error(`User data loading error: ${error}`).message,
+        ),
       );
     setTodoForSelectUser(todo);
   };
 
-  const handleCloseModal = () => {
+  const onCloseModal = () => {
     setTodoForSelectUser(null);
     setUser(null);
   };
@@ -87,9 +90,9 @@ export const App: React.FC = () => {
 
             <div className="block">
               <TodoFilter
-                handleSelectOption={handleSelectOption}
-                handleChangeInput={handleChangeInput}
-                handleClearSearch={handleClearSearch}
+                onSelectOption={onSelectOption}
+                onChangeInput={onChangeInput}
+                onClearSearch={onClearSearch}
                 valueInput={searchFilter}
               />
             </div>
@@ -97,21 +100,28 @@ export const App: React.FC = () => {
             <div className="block">
               {isLoading && <Loader />}
               {errorMessage || (
-                <TodoList todos={filteredTodos} openModal={handleOpenModal} />
+                <TodoList
+                  todos={filteredTodos}
+                  onOpenModal={onOpenModal}
+                  errorUser={errorUserMessage}
+                />
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {errorMessage ||
-        (todoForSelectUser && (
+      {errorUserMessage ? (
+        <>{alert('User data loading error, please relod peage')}</>
+      ) : (
+        todoForSelectUser && (
           <TodoModal
             user={user}
             todo={todoForSelectUser}
-            closeModal={handleCloseModal}
+            onCloseModal={onCloseModal}
           />
-        ))}
+        )
+      )}
     </ModalProvider>
   );
 };
