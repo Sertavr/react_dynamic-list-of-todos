@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { useModalContext } from '../ModalContext';
+import classNames from 'classnames';
 
 type Props = {
   todo: Todo;
@@ -28,7 +29,12 @@ export const TableRow: React.FC<Props> = ({ todo, openModal }) => {
         )}
       </td>
       <td className="is-vcentered is-expanded">
-        <p className={completed ? 'has-text-success' : 'has-text-danger'}>
+        <p
+          className={classNames({
+            'has-text-success': completed,
+            'has-text-danger': !completed,
+          })}
+        >
           {title}
         </p>
       </td>
@@ -44,7 +50,12 @@ export const TableRow: React.FC<Props> = ({ todo, openModal }) => {
           type="button"
         >
           <span className="icon">
-            <i className={`far fa-eye${isClick ? '-slash' : ''}`} />
+            <i
+              className={classNames('far', {
+                'fa-eye': !isClick,
+                'fa-eye-slash': isClick,
+              })}
+            />
           </span>
         </button>
       </td>
